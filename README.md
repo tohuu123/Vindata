@@ -1,10 +1,10 @@
 # Datathon - Forecasting Model
 
-This repository contains the notebook and data for a daily revenue and COGS forecasting pipeline using XGBoost with recursive forecasting.
+This repository contains the training script and data for a daily revenue and COGS forecasting pipeline using XGBoost with seasonality memorization, seed ensembling, and macro-trend extrapolation.
 
 ## Overview
 
-- Model: XGBoost regressors for `Revenue` and `COGS` with recursive forecasting for the submission period.
+- Model: XGBoost regressors for `Revenue` and `COGS` trained to predict sales with hyperparameter tuning, seed ensembling, and macro-trend scaling for the submission period.
 - Requirements: Python 3, a virtual environment, and packages listed in `requirements.txt`.
 
 ## Directory structure
@@ -13,15 +13,25 @@ Project root tree (top-level files and folders):
 
 ```text
 .
-├── model.ipynb            # Main notebook 
+├── train.py              # Main training and forecasting script
 ├── requirements.txt      # Python package dependencies
-├── dataset/              # Input data (sales.csv, sample_submission.csv, etc.)
+├── dataset/              # Input data files
+│   ├── customers.csv
+│   ├── geography.csv
+│   ├── inventory.csv
+│   ├── order_items.csv
+│   ├── orders.csv
+│   ├── payments.csv
+│   ├── products.csv
+│   ├── promotions.csv
+│   ├── returns.csv
+│   ├── reviews.csv
 │   ├── sales.csv
 │   ├── sample_submission.csv
-│   ├── customers.csv
-│   └── ...
-├── plots/                # Output directory for saved figures (created if missing)
-├── submission.csv        # submission file 
+│   ├── shipments.csv
+│   └── web_traffic.csv
+├── plots/                # Output directory for saved figures (created automatically)
+├── submission.csv        # Output submission file 
 └── README.md             # This file
 ```
 
@@ -30,7 +40,11 @@ Project root tree (top-level files and folders):
 1. Create and activate a virtual environment: 
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
+
+# On Windows:
+.venv\Scripts\activate
+# On Linux/Mac:
 source .venv/bin/activate
 ```
 
@@ -42,19 +56,17 @@ pip install -r requirements.txt
 
 If you use Conda, create a Conda environment and install the same packages.
 
-## Running `model.ipynb`
+## Running the Model
 
-There are two common ways to run the notebook:
-
-- Jupyter Notebook / JupyterLab:
+To run the full pipeline (data loading, feature engineering, model training, and inference):
 
 ```bash
-jupyter notebook model.ipynb
+python train.py
 ```
 
-  - Open the notebook in your browser and run cells sequentially.
-
-- VS Code (Jupyter extension):
-
-  - Open the workspace in VS Code and select the `.venv` Python interpreter.
-  - Open `model.ipynb` and use the cell run controls or `Run All`.
+This will:
+1. Load data from the `dataset/` directory.
+2. Perform feature engineering and calculate macro-trend multipliers.
+3. Train XGBoost models with TimeSeriesSplit and Seed Ensembling.
+4. Save feature importance plots to the `plots/` directory.
+5. Generate the final predictions and save them to `submission.csv`.
